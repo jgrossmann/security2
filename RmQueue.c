@@ -37,6 +37,7 @@ char *removeFromQueue(char *rmName, uid_t id) {
 			//strncpy(uniqueName, f->d_name, strlen(f->d_name)+1);
 			strncpy(uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
 			printf("uniqueName: %s\n", uniqueName);
+			printf("rmName: %s\n", rmName);
 			if(strcmp(uniqueName, rmName) == 0) {
 				if(checkOwnership(f->d_name, id)) {
 					if(remove(f->d_name) == -1) {
