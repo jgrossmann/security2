@@ -63,6 +63,7 @@ char *copyFileToQueue(char *path, int number) {
 	strncat(destPath, "_", 1);
 	strncat(destPath, strNum, size);
 
+	printf("destPath: %s\n", destPath);
 	FILE *dest = fopen(destPath, "w+");
 	if(dest == NULL) {
 		return "Could not create new file in spool queue directory";
