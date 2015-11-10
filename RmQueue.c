@@ -14,10 +14,9 @@
 #define QUEUE_INDEX "/home/user01/queue/index.txt"
 
 
-int checkOwnership(char *name, uid_t id) {
+int checkOwnership(char *name, int id) {
 	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return 0;
-	
 	char line[1024] = "";
 	int size = 1024;
 	while(fgets(line, size, f) != NULL) {
@@ -25,6 +24,7 @@ int checkOwnership(char *name, uid_t id) {
 		if(token == NULL) continue;
 		if(strcmp(token, name) == 0) {
 			fclose(f);
+			int fileId = atoi(strtok(NULL, ","));
 			return (atoi(strtok(NULL, ",")) == id);
 		}
 	}
@@ -53,17 +53,18 @@ int removeFile(char *name) {
 	}
 		
 	fclose(f);
+	remove(QUEUE_INDEX);
 	
-	f = fopen(QUEUE_INDEX, "w");
+	FILE *newF = fopen(QUEUE_INDEX, "w");
 	rewind(temp);
 	
 	while(fgets(line, size, temp) != NULL) {
-		fprintf(f, "%s", line);
+		fprintf(newF, "%s", line);
 	}
 	
 	fclose(temp);
 	remove(QUEUE_TEMP);
-	fclose(f);
+	fclose(newF);
 	
 	return remove(name);
 }
@@ -74,13 +75,15 @@ char *removeFromQueue(char *rmName, uid_t id) {
 	
 	if((dir = opendir(QUEUE_DIR)) != NULL) {
 		while((f = readdir(dir)) != NULL) {
+			if(strcmp(f->d_name, ".") == 0 || strcmp(f->d_name, "..") == 0 || strcmp(f->d_name, "index.txt") == 0) {
+				continue;
+			}
 			char name[128] = "", uniqueName[128];
 			strncpy(name, f->d_name, strlen(f->d_name)+1);
 			char *token = strtok(name, "_");
 			//strncpy(uniqueName, f->d_name, strlen(f->d_name)+1);
+			printf("%s\n", f->d_name+(strlen(token)+1));
 			strncpy(uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
-			printf("uniqueName: %s\n", uniqueName);
-			printf("rmName: %s\n", rmName);
 			if(strcmp(uniqueName, rmName) == 0) {
 				if(checkOwnership(f->d_name, id)) {
 					if(removeFile(f->d_name) == -1) {
