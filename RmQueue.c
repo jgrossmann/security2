@@ -10,6 +10,7 @@
 #include<math.h>
 
 #define QUEUE_DIR "/home/user01/queue/"
+#define QUEUE_TEMP "/home/user01/queue/temp.txt"
 #define QUEUE_INDEX "/home/user01/queue/index.txt"
 
 
@@ -28,11 +29,43 @@ int checkOwnership(char *name, uid_t id) {
 		}
 	}
 		
+	fclose(f);
 	return 0;
 }
 
-int removeFile(char *) {
+int removeFile(char *name) {
+	FILE *f = fopen(QUEUE_INDEX, "r");
+	if(f == NULL) return -1;
 	
+	FILE *temp = fopen(QUEUE_TEMP, "w");
+	if(temp == NULL) return -1;
+	
+	char line[1024] = "";
+	int size = 1024;
+	while(fgets(line, size, f) != NULL) {
+		char lineCpy[1024];
+		strncpy(lineCpy, line, strlen(line)+1);
+		char *token = strtok(line, ",");
+		if(token == NULL) continue;
+		if(strcmp(token, name) != 0) {
+			fprintf(temp, "%s", lineCpy);
+		}
+	}
+		
+	fclose(f);
+	
+	f = fopen(QUEUE_INDEX, "w");
+	rewind(temp);
+	
+	while(fgets(line, size, temp) != NULL) {
+		fprintf(f, "%s", line);
+	}
+	
+	fclose(temp);
+	remove(QUEUE_TEMP);
+	fclose(f);
+	
+	return remove(name);
 }
 
 char *removeFromQueue(char *rmName, uid_t id) {
