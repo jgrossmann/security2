@@ -34,9 +34,8 @@ char *removeFromQueue(char *rmName, uid_t id) {
 			char name[128] = "", uniqueName[128];
 			strncpy(name, f->d_name, strlen(f->d_name)+1);
 			char *token = strtok(name, "_");
-			strncpy(uniqueName, f->d_name, strlen(f->d_name)+1);
-			//strncpy(entry->name, token, strlen(token)+1);
-			//strncpy(entry->uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
+			//strncpy(uniqueName, f->d_name, strlen(f->d_name)+1);
+			strncpy(uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
 			if(strcmp(uniqueName, rmName) == 0) {
 				if(checkOwnership(f->d_name, id)) {
 					if(remove(f->d_name) == -1) {

@@ -10,7 +10,7 @@
 #include<math.h>
 #include<time.h>
 
-#define QUEUE_DIR "/home/john/security/security2/" //"/home/user01/queue/"
+#define QUEUE_DIR "/home/user01/queue/"
 
 typedef struct queueEntry {
 	char name[512];
@@ -42,7 +42,7 @@ void printList(queueEntry *root) {
 	if(root == NULL) return;
 	while(root != NULL) {
 		struct tm *t = localtime(&(root->time));		
-		printf("%s %d %d-%d-%d_%d:%d:%d\n", root->name, root->owner, (1900+t->tm_year), t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec);
+		printf("%s %d %d-%d-%d_%d:%d:%d %s\n", root->name, root->owner, (1900+t->tm_year), t->tm_mon+1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, root->uniqueName);
 		root = root->next;
 	}
 }
@@ -119,8 +119,8 @@ queueEntry *getFiles() {
 			char name[128] = "";
 			strncpy(name, f->d_name, strlen(f->d_name)+1);
 			char *token = strtok(name, "_");
-			strncpy(entry->name, f->d_name, strlen(f->d_name)+1);
-			//strncpy(entry->name, token, strlen(token)+1);
+			//strncpy(entry->name, f->d_name, strlen(f->d_name)+1);
+			strncpy(entry->name, token, strlen(token)+1);
 			strncpy(entry->uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
 			
 			char path[1024] = "";
