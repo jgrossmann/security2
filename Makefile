@@ -17,18 +17,21 @@ showqueue: ShowQueue.o
 rmqueue: RmQueue.o
 	gcc -g -o $@ RmQueue.o -lm
 
-# Before testing, we must compile.  
-# Lines preceeded by @ aren't echoed before executing
-# Execution will stop if a program has a non-zero return code;
-# precede the line with a - to override that
-test:	build
-	./SecureFS "test1.txt"
-	@echo "-----------"
-	./SecureFS "test2.txt"
-	@echo "-----------"
 
-exec: build
-	./SecureFS $(ARG)
+test:	
+	touch test1.txt
+	touch test2.txt
+	touch test3.txt
+	showqueue
+	addqueue test1.txt
+	showqueue
+	addqueue test2.txt test3.txt
+	showqueue
+	rmqueue test2.txt
+	showqueue
+	rmqueue test1.txt test3.txt test4.txt
+	showqueue
+	rm test1.txt test2.txt test3.txt
 
 clean:
 	rm -f addqueue showqueue rmqueue *.core *.o
