@@ -9,7 +9,7 @@
 #include<libgen.h>
 #include<math.h>
 
-#define QUEUE_DIR "/home/john/security/security2/" //"/home/user01/queue/"
+#define QUEUE_DIR "/home/user01/queue/"
 
 
 int checkOwnership(char *name, uid_t id) {
