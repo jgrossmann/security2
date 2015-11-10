@@ -53,17 +53,17 @@ char *copyFileToQueue(char *path, int number) {
 		return "Could not get the base file name of source file";
 	}
 	
-	char destPath[1024], strNum[8];
+	char destPath[1024], strNum[8],m fileName[1024];
 	int size = log10(number) + 2;
 	strcpy(destPath, QUEUE_DIR);
 	snprintf(strNum, size, "%d", number);
-	strncat(destPath, strNum, size-1);
-	strncat(destPath, "_", 1);
-	strncat(destPath, baseDest, strlen(baseDest));
-	strncat(destPath, "_", 1);
-	strncat(destPath, strNum, size);
+	strncat(fileName, strNum, size-1);
+	strncat(fileName, "_", 1);
+	strncat(fileName, baseDest, strlen(baseDest));
+	strncat(fileName, "_", 1);
+	strncat(fileName, strNum, size);
+	strncat(destPath, fileName, strlen(fileName)+1);
 
-	printf("destPath: %s\n", destPath);
 	FILE *dest = fopen(destPath, "w+");
 	if(dest == NULL) {
 		return "Could not create new file in spool queue directory";
@@ -78,7 +78,7 @@ char *copyFileToQueue(char *path, int number) {
 	fclose(source);
 	fclose(dest);
 	
-	return addToIndex(destPath, getuid());
+	return addToIndex(fileName, getuid());
 }
 
 
