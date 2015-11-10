@@ -31,11 +31,10 @@ int getNextUniqueNumber() {
 }
 
 char *addToIndex(char *fileName, uid_t id) {
-	FILE *f = fopen(QUEUE_INDEX, "a+");
+	FILE *f = fopen(QUEUE_INDEX, "a");
 	if(f == NULL) {
 		return "Could not access index file to append";
 	}
-	
 	fprintf(f, "%s,%d\n", fileName, id);
 	fclose(f);
 	return NULL;
@@ -57,13 +56,12 @@ char *copyFileToQueue(char *path, int number) {
 	int size = log10(number) + 2;
 	strncpy(destPath, QUEUE_DIR, strlen(QUEUE_DIR));
 	snprintf(strNum, size, "%d", number);
-	strncpy(fileName, strNum, size-1);
+	strncpy(fileName, strNum, size);
 	strncat(fileName, "_", 1);
 	strncat(fileName, baseDest, strlen(baseDest));
 	strncat(fileName, "_", 1);
 	strncat(fileName, strNum, size);
 	strncat(destPath, fileName, strlen(fileName)+1);
-
 	FILE *dest = fopen(destPath, "w+");
 	if(dest == NULL) {
 		return "Could not create new file in spool queue directory";

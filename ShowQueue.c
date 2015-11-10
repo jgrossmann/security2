@@ -58,7 +58,7 @@ void deleteEntries(queueEntry *root) {
 }
 
 int getUserId(char *fileName) {
-	FILE *f = fopen(fileName, "a+");
+	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return -1;
 	
 	char line[1024];
@@ -130,7 +130,7 @@ queueEntry *getFiles() {
 	if((dir = opendir(QUEUE_DIR)) != NULL) {
 		while((f = readdir(dir)) != NULL) {
 		
-			if(strcmp(f->d_name, ".") == 0 || strcmp(f->d_name, "..") == 0) {
+			if(strcmp(f->d_name, ".") == 0 || strcmp(f->d_name, "..") == 0 || strcmp(f->d_name, "index.txt") == 0 ) {
 				continue;
 			}
 			queueEntry *entry = (queueEntry *) malloc(sizeof(queueEntry));

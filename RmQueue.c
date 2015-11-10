@@ -31,6 +31,10 @@ int checkOwnership(char *name, uid_t id) {
 	return 0;
 }
 
+int removeFile(char *) {
+	
+}
+
 char *removeFromQueue(char *rmName, uid_t id) {
 	DIR *dir;
 	struct dirent *f;
@@ -46,7 +50,7 @@ char *removeFromQueue(char *rmName, uid_t id) {
 			printf("rmName: %s\n", rmName);
 			if(strcmp(uniqueName, rmName) == 0) {
 				if(checkOwnership(f->d_name, id)) {
-					if(remove(f->d_name) == -1) {
+					if(removeFile(f->d_name) == -1) {
 						return "Could not remove file from spool queue directory";
 					}else {
 						return NULL;
