@@ -11,10 +11,11 @@
 #include<time.h>
 
 #define QUEUE_DIR "/home/user01/queue/"
+#define QUEUE_INDEX "/home/user01/queue/index.txt"
 
 typedef struct queueEntry {
 	char name[512];
-	uid_t owner;
+	int owner;
 	time_t time;
 	char uniqueName[512];
 	struct queueEntry *next;
@@ -54,6 +55,25 @@ void deleteEntries(queueEntry *root) {
 		free(root->prev);
 	}
 	free(root);
+}
+
+int getUserId(char *fileName) {
+	FILE *f = fopen(fileName, "a+");
+	if(f == NULL) return -1;
+	
+	char line[1024];
+	int size = 1024;
+	while(fgets(line, size, f) != NULL) {
+		char *token = strtok(line, ",");
+		if(token == NULL) continue;
+		if(strcmp(token, fileName) == 0) {
+			fclose(f);
+			return atoi(strtok(NULL, ","));
+		}
+	}
+	
+	fclose(f);
+	return 0;
 }
 
 queueEntry *insert(queueEntry *root, queueEntry *newEntry) {
@@ -133,7 +153,14 @@ queueEntry *getFiles() {
 				return NULL;
 			}
 			
-			memcpy(&entry->owner, &statbuf.st_uid, sizeof(statbuf.st_uid));
+			int owner = getUserId(f->d_name);
+			if(owner <= 0) {
+				printf("Error getting owner of file from queue index\n");
+				return NULL;
+			}
+			
+			entry->owner = owner;
+			//memcpy(&entry->owner, &statbuf.st_uid, sizeof(statbuf.st_uid));
 			//entry->owner = statbuf.st_uid;
 			entry->time = statbuf.st_mtime;
 			

@@ -10,6 +10,7 @@
 #include<math.h>
 
 #define QUEUE_DIR "/home/user01/queue/"
+#define QUEUE_INDEX "/home/user01/queue/index.txt"
 
 int getNextUniqueNumber() {
 	DIR *dir;
@@ -27,6 +28,17 @@ int getNextUniqueNumber() {
 		closedir(dir);
 	}
 	return lastNum + 1;
+}
+
+char *addToIndex(char *fileName, uid_t id) {
+	FILE *f = fopen(QUEUE_INDEX, "a+");
+	if(f == NULL) {
+		return "Could not access index file to append";
+	}
+	
+	fprintf(f, "%s,%d\n", fileName, id);
+	fclose(f);
+	return NULL;
 }
 
 
@@ -62,12 +74,10 @@ char *copyFileToQueue(char *path, int number) {
 		fputc(ch, dest);
 	}
 	
-	chown(destPath, getuid(), getegid());
-	
 	fclose(source);
 	fclose(dest);
 	
-	return NULL;
+	return addToIndex(destPath, getuid());
 }
 
 

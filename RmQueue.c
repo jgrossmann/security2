@@ -10,19 +10,25 @@
 #include<math.h>
 
 #define QUEUE_DIR "/home/user01/queue/"
+#define QUEUE_INDEX "/home/user01/queue/index.txt"
 
 
 int checkOwnership(char *name, uid_t id) {
-	char path[1024] = "";
-	strncpy(path, QUEUE_DIR, strlen(QUEUE_DIR));
-	strncat(path, name, strlen(name)+1);
+	FILE *f = fopen(QUEUE_INDEX, "r");
+	if(f == NULL) return 0;
 	
-	struct stat statbuf;
-	if(stat(path, &statbuf) == -1) {
-		return 0;
+	char line[1024] = "";
+	int size = 1024;
+	while(fgets(line, size, f) != NULL) {
+		char *token = strtok(line, ",");
+		if(token == NULL) continue;
+		if(strcmp(token, name) == 0) {
+			fclose(f);
+			return (atoi(strtok(NULL, ",")) == id);
+		}
 	}
-	
-	return statbuf.st_uid == id;
+		
+	return 0;
 }
 
 char *removeFromQueue(char *rmName, uid_t id) {
