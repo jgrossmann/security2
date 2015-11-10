@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     }
 	
 	uid_t id = getuid();
+	printf("id: %d, eid: %d\n", id, geteuid());
 	
   	int i = 1;
     for(;i<argc;i++) {

@@ -18,10 +18,9 @@ int getNextUniqueNumber() {
 	
 	if((dir = opendir(QUEUE_DIR)) != NULL) {
 		while((f = readdir(dir)) != NULL) {
-			printf("file: %s\n", f->d_name);
 			char *token = strtok(f->d_name, "_");
-			printf("token: %s\n", token);
 			if(token == NULL) continue;
+			
 			int num = atoi(token);
 			if(lastNum < num) lastNum = num;
 		}
@@ -29,6 +28,7 @@ int getNextUniqueNumber() {
 	}
 	return lastNum + 1;
 }
+
 
 char *copyFileToQueue(char *path, int number) {
 	FILE *source = fopen(path, "r");
@@ -45,9 +45,11 @@ char *copyFileToQueue(char *path, int number) {
 	int size = log10(number) + 2;
 	strcpy(destPath, QUEUE_DIR);
 	snprintf(strNum, size, "%d", number);
-	strcat(destPath, strNum);
-	strcat(destPath, "_");
-	strcat(destPath, baseDest);
+	strncat(destPath, strNum, size-1);
+	strncat(destPath, "_", 1);
+	strncat(destPath, baseDest, strlen(baseDest));
+	strncat(destPath, "_", 1);
+	strncat(destPath, strNum, size);
 
 	FILE *dest = fopen(destPath, "w+");
 	if(dest == NULL) {
@@ -59,6 +61,8 @@ char *copyFileToQueue(char *path, int number) {
 	while( (ch = fgetc(source)) != EOF) {
 		fputc(ch, dest);
 	}
+	
+	chown(destPath, getuid(), getegid());
 	
 	fclose(source);
 	fclose(dest);
