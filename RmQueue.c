@@ -50,7 +50,9 @@ char *removeFromQueue(char *rmName, uid_t id) {
 			}
 		}
 		closedir(dir);
-	}	
+	}else {
+		printf("Could not open queue directory\n");
+	}
 	return "File does not exist in queue";
 }
 
