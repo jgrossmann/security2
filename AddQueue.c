@@ -53,11 +53,11 @@ char *copyFileToQueue(char *path, int number) {
 		return "Could not get the base file name of source file";
 	}
 	
-	char destPath[1024], strNum[8],m fileName[1024];
+	char destPath[1024], strNum[8], fileName[1024];
 	int size = log10(number) + 2;
-	strcpy(destPath, QUEUE_DIR);
+	strncpy(destPath, QUEUE_DIR, strlen(QUEUE_DIR));
 	snprintf(strNum, size, "%d", number);
-	strncat(fileName, strNum, size-1);
+	strncpy(fileName, strNum, size-1);
 	strncat(fileName, "_", 1);
 	strncat(fileName, baseDest, strlen(baseDest));
 	strncat(fileName, "_", 1);
