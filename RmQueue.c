@@ -25,7 +25,7 @@ int checkOwnership(char *name, int id) {
 		if(strcmp(token, name) == 0) {
 			fclose(f);
 			int fileId = atoi(strtok(NULL, ","));
-			return (atoi(strtok(NULL, ",")) == id);
+			return (fileId == id);
 		}
 	}
 		
@@ -37,7 +37,7 @@ int removeFile(char *name) {
 	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return -1;
 	
-	FILE *temp = fopen(QUEUE_TEMP, "w");
+	FILE *temp = fopen(QUEUE_TEMP, "w+");
 	if(temp == NULL) return -1;
 	
 	char line[1024] = "";
@@ -52,21 +52,27 @@ int removeFile(char *name) {
 		}
 	}
 		
+	
 	fclose(f);
 	remove(QUEUE_INDEX);
 	
 	FILE *newF = fopen(QUEUE_INDEX, "w");
-	rewind(temp);
 	
+	rewind(temp);	
 	while(fgets(line, size, temp) != NULL) {
 		fprintf(newF, "%s", line);
 	}
+	
 	
 	fclose(temp);
 	remove(QUEUE_TEMP);
 	fclose(newF);
 	
-	return remove(name);
+	char path[1024];
+	strncpy(path, QUEUE_DIR, strlen(QUEUE_DIR)+1);
+	strncat(path, name, strlen(name)+1);
+	
+	return remove(path);
 }
 
 char *removeFromQueue(char *rmName, uid_t id) {
@@ -82,7 +88,6 @@ char *removeFromQueue(char *rmName, uid_t id) {
 			strncpy(name, f->d_name, strlen(f->d_name)+1);
 			char *token = strtok(name, "_");
 			//strncpy(uniqueName, f->d_name, strlen(f->d_name)+1);
-			printf("%s\n", f->d_name+(strlen(token)+1));
 			strncpy(uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
 			if(strcmp(uniqueName, rmName) == 0) {
 				if(checkOwnership(f->d_name, id)) {
@@ -111,7 +116,6 @@ int main(int argc, char *argv[]) {
     }
 	
 	uid_t id = getuid();
-	printf("id: %d, eid: %d\n", id, geteuid());
 	
   	int i = 1;
     for(;i<argc;i++) {

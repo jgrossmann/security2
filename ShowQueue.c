@@ -60,7 +60,6 @@ void deleteEntries(queueEntry *root) {
 int getUserId(char *fileName) {
 	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return -1;
-	
 	char line[1024];
 	int size = 1024;
 	while(fgets(line, size, f) != NULL) {
@@ -82,7 +81,8 @@ queueEntry *insert(queueEntry *root, queueEntry *newEntry) {
 	}else {
 		queueEntry *curEntry = root;
 		while(curEntry->next != NULL) {
-			if(newEntry->time < curEntry->time) {
+			//if(newEntry->time < curEntry->time) {
+			if(atoi(newEntry->name) < atoi(curEntry->name)) {
 				if(curEntry->prev != NULL) {
 					curEntry->prev->next = newEntry;
 					newEntry->prev = curEntry->prev;
@@ -98,7 +98,8 @@ queueEntry *insert(queueEntry *root, queueEntry *newEntry) {
 			curEntry = curEntry->next;
 		}
 		
-		if(newEntry->time < curEntry->time) {
+		//if(newEntry->time < curEntry->time) {
+		if(atoi(newEntry->name) < atoi(curEntry->name)) {
 			if(curEntry->prev != NULL) {
 				curEntry->prev->next = newEntry;
 				newEntry->prev = curEntry->prev;

@@ -42,26 +42,32 @@ char *addToIndex(char *fileName, uid_t id) {
 
 
 char *copyFileToQueue(char *path, int number) {
+	uid_t spoolId = geteuid();
+	setuid(getuid());
 	FILE *source = fopen(path, "r");
 	if(source == NULL) {
+		setuid(spoolId);
 		return "Could not access source file";
 	}
 	
 	char *baseDest = basename(path);
 	if(baseDest == NULL) {
+		setuid(spoolId);
 		return "Could not get the base file name of source file";
 	}
 	
 	char destPath[1024], strNum[8], fileName[1024];
 	int size = log10(number) + 2;
-	strncpy(destPath, QUEUE_DIR, strlen(QUEUE_DIR));
+	strncpy(destPath, QUEUE_DIR, strlen(QUEUE_DIR)+1);
 	snprintf(strNum, size, "%d", number);
 	strncpy(fileName, strNum, size);
-	strncat(fileName, "_", 1);
-	strncat(fileName, baseDest, strlen(baseDest));
-	strncat(fileName, "_", 1);
+	strncat(fileName, "_", 2);
+	strncat(fileName, baseDest, strlen(baseDest)+1);
+	strncat(fileName, "_", 2);
 	strncat(fileName, strNum, size);
 	strncat(destPath, fileName, strlen(fileName)+1);
+
+	setuid(spoolId);
 	FILE *dest = fopen(destPath, "w+");
 	if(dest == NULL) {
 		return "Could not create new file in spool queue directory";
@@ -97,6 +103,7 @@ int main(int argc, char *argv[]) {
     		printf("%s: Y\n", argv[i]);
     	}else {
     		printf("%s: X %s\n", argv[i], error);
+		uniqueNumber--;
     	}
     }
     
