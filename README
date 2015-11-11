@@ -24,3 +24,5 @@ The rmqueue and showqueue programs start setuid as user01 and remain like that.
 The user IDs of the original file owner for each file in the queue are contained in /home/user01/queue/index.txt. This file contains on each line:
 <fileName>,<userID>
 where fileName is the name of the file in the queue directory, and the userID is the user ID of the original file owner. 
+
+**NOTE make test assumes a fresh spooler environment. This is achieved by running sudo ./install.sh to clear the spooler queue directory and ensure all 3 programs are in the /bin directory.
