@@ -1,0 +1,26 @@
+John Grossmann jg3538
+Project 2
+
+I chose the setuid option for this assignment.
+
+Everything is already installed, but if you were to start from scratch, go to the /home/src directory and run the command:
+make
+
+The make command compiles all of the programs needed. Then, run the command:
+sudo ./install.sh
+
+The install script moves the compiled executables to the /bin/ directory, changes the program owners to user01:user01, changes permissions to 600, and adds setuid with chmod u+s. It also creates the /home/user01/queue directory as the protected spooler queue directory. The permissions are set to 700 for this directory.
+
+The spooler user is user01. The sudo user is tinyvm. 
+
+To run the spooler programs, switch to the user you wish to test, then run the commands like stated in the project directions, or run make test from the /home/src directory.
+
+
+
+In order to copy files into the protected directory, the addqueue program starts setuid for user01. To open a file to copy, the program changes setuid to that of the running user. Then, switches setuid back to user01 to copy the contents into the spooler queue directory. 
+
+The rmqueue and showqueue programs start setuid as user01 and remain like that. 
+
+The user IDs of the original file owner for each file in the queue are contained in /home/user01/queue/index.txt. This file contains on each line:
+<fileName>,<userID>
+where fileName is the name of the file in the queue directory, and the userID is the user ID of the original file owner. 

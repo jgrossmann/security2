@@ -1,0 +1,23 @@
+PLEASE LOOK AT README BEFORE RUNNING ANYTHING
+
+VM_ADDRESS:sec-vm23.cs.columbia.edu
+USER_SUDO:tinyvm
+PASS_SUDO:securityproj2
+
+USER_SPOOLER:user01
+PASS_SPOOLER:user01*
+
+USER:user01
+PASS:user01*
+
+USER:user02
+PASS:user02*
+
+USER:user03
+PASS:user03*
+
+SETUID(1) OPTION
+
+SOURCE_CODE_PATH:/home/src/
+
+PROTECTED_DIRECTORY:/home/user01/queue/
