@@ -19,19 +19,27 @@ rmqueue: RmQueue.o
 
 
 test:	
-	touch test1.txt
-	touch test2.txt
-	touch test3.txt
+	touch /tmp/test1.txt
+	touch /tmp/test2.txt
+	touch /tmp/test3.txt
 	showqueue
-	addqueue test1.txt
+	@echo "--------"
+	addqueue /tmp/test1.txt
+	@echo "--------"
 	showqueue
-	addqueue test2.txt test3.txt
+	@echo "--------"
+	addqueue /tmp/test2.txt /tmp/test3.txt
+	@echo "--------"
 	showqueue
-	rmqueue test2.txt
+	@echo "--------"
+	rmqueue test2.txt_2
+	@echo "--------"
 	showqueue
-	rmqueue test1.txt test3.txt test4.txt
+	@echo "--------"
+	rmqueue test1.txt_1 test3.txt_3 test4.txt_4
+	@echo "--------"
 	showqueue
-	rm test1.txt test2.txt test3.txt
+	rm /tmp/test1.txt /tmp/test2.txt /tmp/test3.txt
 
 clean:
 	rm -f addqueue showqueue rmqueue *.core *.o
