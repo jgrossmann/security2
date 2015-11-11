@@ -12,6 +12,12 @@
 #define QUEUE_DIR "/home/user01/queue/"
 #define QUEUE_INDEX "/home/user01/queue/index.txt"
 
+
+/*
+	Each file in the queue has a unique number to append to
+	the file name. This ensures the filenames are unique. The
+	number is the first character with an underscore: "_" after it
+*/
 int getNextUniqueNumber() {
 	DIR *dir;
 	struct dirent *f;
@@ -30,6 +36,10 @@ int getNextUniqueNumber() {
 	return lastNum + 1;
 }
 
+/*
+	Add the filename and corresponding user id to the
+	index file in the form: <filename>,<userid>
+*/
 char *addToIndex(char *fileName, uid_t id) {
 	FILE *f = fopen(QUEUE_INDEX, "a");
 	if(f == NULL) {
@@ -41,7 +51,15 @@ char *addToIndex(char *fileName, uid_t id) {
 }
 
 
+/*
+	Copies a file into the protected spool queue directory.
+	To open the source file, setuid to the calling user id.
+	Switch back to setuid of the spool user id: user01 after
+	to create a file in the spool queue directory.
+*/
 char *copyFileToQueue(char *path, int number) {
+	
+	//setuid to calling userid to open source file
 	uid_t spoolId = geteuid();
 	setuid(getuid());
 	FILE *source = fopen(path, "r");
@@ -56,6 +74,7 @@ char *copyFileToQueue(char *path, int number) {
 		return "Could not get the base file name of source file";
 	}
 	
+	//create file name of file in spool queue
 	char destPath[1024], strNum[8], fileName[1024];
 	int size = log10(number) + 2;
 	strncpy(destPath, QUEUE_DIR, strlen(QUEUE_DIR)+1);
@@ -67,6 +86,7 @@ char *copyFileToQueue(char *path, int number) {
 	strncat(fileName, strNum, size);
 	strncat(destPath, fileName, strlen(fileName)+1);
 
+	//setuid back to spool user to create file in queue directory
 	setuid(spoolId);
 	FILE *dest = fopen(destPath, "w+");
 	if(dest == NULL) {
@@ -89,7 +109,7 @@ char *copyFileToQueue(char *path, int number) {
 int main(int argc, char *argv[]) {
     if(argc < 2) {
         printf("\nUSAGE:\n");
-        printf("List of Files to add to queue\n");
+        printf("addqueue <file1> [<file2> <file3>...] etc");
         return 1;
     }
     

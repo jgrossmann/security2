@@ -13,7 +13,12 @@
 #define QUEUE_TEMP "/home/user01/queue/temp.txt"
 #define QUEUE_INDEX "/home/user01/queue/index.txt"
 
-
+/*
+	Checks index.txt to see if the calling user was
+	the one to add the file to remove, into the queue.
+	Each line of index.txt is of the format: <filename>,<userid>
+	Return 0 for does not own, 1 for owns
+*/
 int checkOwnership(char *name, int id) {
 	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return 0;
@@ -33,6 +38,13 @@ int checkOwnership(char *name, int id) {
 	return 0;
 }
 
+/*
+	Removes the file specified by "name" from index.txt
+	as well as deleting the actual file in the queue directory.
+	Copy all of the contents of index.txt to a temporary file
+	except the line to be deleted. Then, copy the temporary file
+	back to the index.txt file.
+*/
 int removeFile(char *name) {
 	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return -1;
@@ -42,6 +54,8 @@ int removeFile(char *name) {
 	
 	char line[1024] = "";
 	int size = 1024;
+	
+	//copy every line to temp except line containing name
 	while(fgets(line, size, f) != NULL) {
 		char lineCpy[1024];
 		strncpy(lineCpy, line, strlen(line)+1);
@@ -58,6 +72,7 @@ int removeFile(char *name) {
 	
 	FILE *newF = fopen(QUEUE_INDEX, "w");
 	
+	//copy temp to new index.txt file
 	rewind(temp);	
 	while(fgets(line, size, temp) != NULL) {
 		fprintf(newF, "%s", line);
@@ -75,6 +90,12 @@ int removeFile(char *name) {
 	return remove(path);
 }
 
+
+/*
+	Iterates through every file in the spool queue directory to 
+	find a file matching "rmName". Checks if user trying to remove
+	file was the user that added the file to the queue.
+*/
 char *removeFromQueue(char *rmName, uid_t id) {
 	DIR *dir;
 	struct dirent *f;
@@ -87,8 +108,9 @@ char *removeFromQueue(char *rmName, uid_t id) {
 			char name[128] = "", uniqueName[128];
 			strncpy(name, f->d_name, strlen(f->d_name)+1);
 			char *token = strtok(name, "_");
-			//strncpy(uniqueName, f->d_name, strlen(f->d_name)+1);
 			strncpy(uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
+			
+			//if find file, check if user owns file
 			if(strcmp(uniqueName, rmName) == 0) {
 				if(checkOwnership(f->d_name, id)) {
 					if(removeFile(f->d_name) == -1) {
@@ -115,6 +137,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 	
+	//userid of calling user
 	uid_t id = getuid();
 	
   	int i = 1;

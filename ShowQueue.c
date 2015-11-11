@@ -13,11 +13,15 @@
 #define QUEUE_DIR "/home/user01/queue/"
 #define QUEUE_INDEX "/home/user01/queue/index.txt"
 
+
+/*
+	Holds all information needed to print for each file in queue
+*/
 typedef struct queueEntry {
-	char name[512];
+	char name[512];		//number specifying order in which added to queue
 	int owner;
 	time_t time;
-	char uniqueName[512];
+	char uniqueName[512];	//orignal fileName with "name" prepended and appended
 	struct queueEntry *next;
 	struct queueEntry *prev;
 } queueEntry;
@@ -39,6 +43,7 @@ int getNumFiles() {
 	return numFiles;
 }
 
+//prints each file in queue stored as linked list
 void printList(queueEntry *root) {
 	if(root == NULL) return;
 	while(root != NULL) {
@@ -48,6 +53,7 @@ void printList(queueEntry *root) {
 	}
 }
 
+//cleanup linked list
 void deleteEntries(queueEntry *root) {
 	if(root == NULL) return;
 	while(root->next != NULL) {
@@ -57,6 +63,11 @@ void deleteEntries(queueEntry *root) {
 	free(root);
 }
 
+/*
+	Goes into the index.txt file to find the userid of the user
+	who added the file specified by fileName. Each line is of the
+	format: <fileName>,<userid>
+*/
 int getUserId(char *fileName) {
 	FILE *f = fopen(QUEUE_INDEX, "r");
 	if(f == NULL) return -1;
@@ -75,6 +86,11 @@ int getUserId(char *fileName) {
 	return 0;
 }
 
+/*
+	Inserts a new queueEntry node into the linked list sorted
+	by queueEntry->name which is a unique number specifying the
+	order in which a file was added to the queue.
+*/
 queueEntry *insert(queueEntry *root, queueEntry *newEntry) {
 	if(root == NULL) {
 		return newEntry;
@@ -121,6 +137,12 @@ queueEntry *insert(queueEntry *root, queueEntry *newEntry) {
 	return root;
 }
 
+
+/*
+	Goes through the spool queue directory and creates a linked list
+	of queueEntry nodes, 1 node for each file, sorted by order in
+	which files were put into the queue.
+*/
 queueEntry *getFiles() {
 	DIR *dir;
 	struct dirent *f;
@@ -128,6 +150,7 @@ queueEntry *getFiles() {
 	if(numFiles == 0) return NULL;
 	queueEntry *root = NULL;
 	
+	//iterate over every file in queue
 	if((dir = opendir(QUEUE_DIR)) != NULL) {
 		while((f = readdir(dir)) != NULL) {
 		
@@ -140,7 +163,8 @@ queueEntry *getFiles() {
 			char name[128] = "";
 			strncpy(name, f->d_name, strlen(f->d_name)+1);
 			char *token = strtok(name, "_");
-			//strncpy(entry->name, f->d_name, strlen(f->d_name)+1);
+			
+			//create entry->name and entry->unqiueName
 			strncpy(entry->name, token, strlen(token)+1);
 			strncpy(entry->uniqueName, f->d_name+(strlen(token)+1), (strlen(f->d_name) - strlen(token)));
 			
@@ -161,8 +185,6 @@ queueEntry *getFiles() {
 			}
 			
 			entry->owner = owner;
-			//memcpy(&entry->owner, &statbuf.st_uid, sizeof(statbuf.st_uid));
-			//entry->owner = statbuf.st_uid;
 			entry->time = statbuf.st_mtime;
 			
 			root = insert(root, entry);

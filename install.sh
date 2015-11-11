@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Copy files to /bin, change owner to user01 (spool user), 
+#setuid to user01, create protected spool queue directory
+#with only rwx permissions for user01, set owner of directory
+#to user01
+
 cp ./addqueue /bin/
 cp ./showqueue /bin/
 cp ./rmqueue /bin/

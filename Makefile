@@ -1,13 +1,7 @@
 
-# The first target is the default if you just say "make".  In this
-# case, "build" relies on "sample", because I want the executable to be
-# called "sample"
+# The first target is the default if you just say "make".
+build: addqueue showqueue rmqueue
 
-all: addqueue showqueue rmqueue
-
-# "sample" requires a set of object files
-# $@ is a special variable: the target of the operation, in this case sample
-# $? is the
 addqueue: AddQueue.o
 	gcc -g -o $@ AddQueue.o -lm
 	
