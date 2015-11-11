@@ -18,6 +18,6 @@ PASS:user03*
 
 SETUID(1) OPTION
 
-SOURCE_CODE_PATH:/home/src/
+SOURCE_CODE_PATH:/home/tinyvm/src/
 
 PROTECTED_DIRECTORY:/home/user01/queue/

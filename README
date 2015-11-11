@@ -3,7 +3,7 @@ Project 2
 
 I chose the setuid option for this assignment.
 
-Everything is already installed, but if you were to start from scratch, go to the /home/src directory and run the command:
+Everything is already installed, but if you were to start from scratch, go to the /home/tinyvm/src directory and run the command:
 make
 
 The make command compiles all of the programs needed. Then, run the command:
@@ -13,7 +13,7 @@ The install script moves the compiled executables to the /bin/ directory, change
 
 The spooler user is user01. The sudo user is tinyvm. 
 
-To run the spooler programs, switch to the user you wish to test, then run the commands like stated in the project directions, or run make test from the /home/src directory.
+To run the spooler programs, switch to the user you wish to test, then run the commands like stated in the project directions, or run make test from the /home/tinyvm/src directory.
 
 
 
